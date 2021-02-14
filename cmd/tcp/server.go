@@ -1,4 +1,4 @@
-package tcp
+package main
 
 import (
 	"bufio"
@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	listener, err := net.Listen("tcp", ":2020")
+	listener, err := net.Listen("tcp", ":2021")
 	if err != nil{
 		panic(err)
 	}
@@ -57,10 +57,13 @@ func handleCon(conn net.Conn) {
 		timer := time.NewTimer(time.Minute * 1)
 		for {
 			select {
-
+			case <-timer.C:
+				conn.Close()
+			case <-userActive:
+				timer.Reset(time.Minute * 1)
 			}
 		}
-	}
+	}()
 	//5.循环读取用户输入
 	input := bufio.NewScanner(conn)
 	for input.Scan() {
